@@ -1,0 +1,195 @@
+variables:
+  # citicom specific
+  PLATFORM_DOCKER_REGISTRY_URL_CITICOM: "571710312588.dkr.ecr.ap-southeast-1.amazonaws.com"
+  PLATFORM_AWS_REGION_CITICOM: "ap-southeast-1"
+  PLATFORM_EKS_CLUSTER_CITICOM: "citicom_global_eks"
+  # ringkas specific
+  PLATFORM_DOCKER_REGISTRY_URL_RINGKAS: "186667184429.dkr.ecr.ap-southeast-3.amazonaws.com"
+  PLATFORM_AWS_REGION_RINGKAS: "ap-southeast-3"
+  PLATFORM_EKS_CLUSTER_RINGKAS: "ringkas_global_eks"
+include:
+  - template: Security/SAST.gitlab-ci.yml
+stages:
+  - cache
+  - test
+  - build-docker
+  - deploy
+
+global-cache:
+  image: $PLATFORM_DOCKER_REGISTRY_URL/dockerhub/node:16.15.1-bullseye-slim
+  stage: cache
+  only:
+    refs:
+      - main
+      - tag
+    changes:
+      - package-lock.json
+  cache:
+    - key: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME-cache"
+      paths:
+        - ".npm"
+      policy: pull-push
+  script:
+    - npm ci --cache .npm --prefer-offline
+
+test:
+  image: $PLATFORM_DOCKER_REGISTRY_URL/dockerhub/node:16.15.1-bullseye-slim
+  stage: test
+  cache:
+    - key: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME-cache"
+      paths:
+        - ".npm"
+      policy: pull
+  before_script:
+    - npm ci --cache ../.npm --prefer-offline
+  script:
+    - npm run lint
+    - npm test
+    - npm run sonar
+
+# Build Stage
+
+# platform
+build-docker:
+  stage: build-docker
+  image:
+    name: $PLATFORM_DOCKER_REGISTRY_URL/gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  only:
+    - main
+    - tags
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - if [[ -z "$CI_COMMIT_TAG" ]]; then /kaniko/executor --context . --dockerfile Dockerfile --destination $PLATFORM_DOCKER_REGISTRY_URL/platform/moltres:latest; fi
+    - if [[ -n "$CI_COMMIT_TAG" ]]; then /kaniko/executor --context . --dockerfile Dockerfile --destination $PLATFORM_DOCKER_REGISTRY_URL/platform/moltres:$CI_COMMIT_TAG --destination $PLATFORM_DOCKER_REGISTRY_URL/platform/moltres:$CI_COMMIT_SHA; fi
+
+# citicom
+build-docker-citicom:
+  stage: build-docker
+  image:
+    name: $PLATFORM_DOCKER_REGISTRY_URL_CITICOM/gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  tags:
+    - citicom
+  only:
+    - main
+    - tags
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - if [[ -z "$CI_COMMIT_TAG" ]]; then /kaniko/executor --context . --dockerfile Dockerfile --destination $PLATFORM_DOCKER_REGISTRY_URL_CITICOM/platform/moltres:latest; fi
+    - if [[ -n "$CI_COMMIT_TAG" ]]; then /kaniko/executor --context . --dockerfile Dockerfile --destination $PLATFORM_DOCKER_REGISTRY_URL_CITICOM/platform/moltres:$CI_COMMIT_TAG --destination $PLATFORM_DOCKER_REGISTRY_URL_CITICOM/platform/moltres:$CI_COMMIT_SHA; fi
+
+# ringkas
+build-docker-ringkas:
+  stage: build-docker
+  image:
+    name: $PLATFORM_DOCKER_REGISTRY_URL_RINGKAS/gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  tags:
+    - ringkas
+  only:
+    - main
+    - tags
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - if [[ -z "$CI_COMMIT_TAG" ]]; then /kaniko/executor --context . --dockerfile Dockerfile --destination $PLATFORM_DOCKER_REGISTRY_URL_RINGKAS/platform/moltres:latest; fi
+    - if [[ -n "$CI_COMMIT_TAG" ]]; then /kaniko/executor --context . --dockerfile Dockerfile --destination $PLATFORM_DOCKER_REGISTRY_URL_RINGKAS/platform/moltres:$CI_COMMIT_TAG --destination $PLATFORM_DOCKER_REGISTRY_URL_RINGKAS/platform/moltres:$CI_COMMIT_SHA; fi
+
+# Deployment Stage
+# citicom
+deploy-staging-citicom:
+  stage: deploy
+  image: $PLATFORM_DOCKER_REGISTRY_URL_CITICOM/dockerhub/alpine/k8s:1.17.5
+  tags:
+    - citicom
+  only:
+    - main
+  dependencies: []
+  needs:
+    - build-docker-citicom
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - aws eks --region $PLATFORM_AWS_REGION_CITICOM update-kubeconfig --name $PLATFORM_EKS_CLUSTER_CITICOM --kubeconfig kubeconfig
+    - kubectl --kubeconfig kubeconfig -n citicom-staging rollout restart deployments moltres
+
+deploy-uat-citicom:
+  stage: deploy
+  image: $PLATFORM_DOCKER_REGISTRY_URL_CITICOM/dockerhub/alpine/k8s:1.17.5
+  tags:
+    - citicom
+  only:
+    - tags
+  dependencies: []
+  needs:
+    - build-docker-citicom
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - aws eks --region $PLATFORM_AWS_REGION_CITICOM update-kubeconfig --name $PLATFORM_EKS_CLUSTER_CITICOM --kubeconfig kubeconfig
+    - kubectl --kubeconfig kubeconfig -n citicom-uat rollout restart deployments moltres
+
+# ringkas
+deploy-staging-ringkas:
+  stage: deploy
+  image: $PLATFORM_DOCKER_REGISTRY_URL_RINGKAS/dockerhub/alpine/k8s:1.17.5
+  tags:
+    - ringkas
+  only:
+    - main
+  dependencies: []
+  needs:
+    - build-docker-ringkas
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - aws eks --region $PLATFORM_AWS_REGION_RINGKAS update-kubeconfig --name $PLATFORM_EKS_CLUSTER_RINGKAS --kubeconfig kubeconfig
+    - kubectl --kubeconfig kubeconfig -n ringkas-staging rollout restart deployments moltres
+
+deploy-uat-ringkas:
+  stage: deploy
+  image: $PLATFORM_DOCKER_REGISTRY_URL_RINGKAS/dockerhub/alpine/k8s:1.17.5
+  tags:
+    - ringkas
+  only:
+    - tags
+  dependencies: []
+  needs:
+    - build-docker-ringkas
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - aws eks --region $PLATFORM_AWS_REGION_RINGKAS update-kubeconfig --name $PLATFORM_EKS_CLUSTER_RINGKAS --kubeconfig kubeconfig
+    - kubectl --kubeconfig kubeconfig -n ringkas-uat rollout restart deployments moltres
+
+# DCI
+deploy-staging-dci:
+  stage: deploy
+  image: $PLATFORM_DOCKER_REGISTRY_URL/dockerhub/alpine/k8s:1.17.5
+  only:
+    - main
+  dependencies: []
+  needs:
+    - build-docker
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - aws eks --region $PLATFORM_AWS_REGION update-kubeconfig --name $PLATFORM_EKS_CLUSTER --kubeconfig kubeconfig
+    - kubectl --kubeconfig kubeconfig -n dci-staging rollout restart deployments moltres
+
+deploy-hotfix-dci:
+  stage: deploy
+  image: $PLATFORM_DOCKER_REGISTRY_URL/dockerhub/alpine/k8s:1.17.5
+  only:
+    - tags
+  dependencies: []
+  needs:
+    - build-docker
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - aws eks --region $PLATFORM_AWS_REGION update-kubeconfig --name $PLATFORM_EKS_CLUSTER --kubeconfig kubeconfig
+    - kubectl --kubeconfig kubeconfig -n dci-hotfix rollout restart deployments moltres

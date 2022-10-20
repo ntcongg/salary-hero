@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  moltres:
+    image: moltres
+    ports:
+      - 8080:8080
+    environment:
+      - PORT=8080
+    networks:
+      - compose-network
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_URL=${DATABASE_URL}
+    ports:
+      - '8080:8080'
+    volumes:
+      - db:/var/lib/postgresql/data
+
+networks:
+  compose-network:
