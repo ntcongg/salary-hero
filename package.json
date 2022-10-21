@@ -11,16 +11,17 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^4.3.1",
+    "debug": "^4.3.4",
     "dotenv": "10.0.0",
     "express": "4.16.1",
     "express-healthcheck": "0.1.0",
+    "express-oas-generator": "^1.0.45",
     "express-validator": "6.14.2",
     "jwt-decode": "^3.1.2",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "pg": "8.7.3",
-    "pg-format": "^1.0.4",
-    "swagger-ui-express": "4.5.0",
-    "yamljs": "0.3.0"
+    "pg-format": "^1.0.4"
   },
   "devDependencies": {
     "cross-env": "7.0.3",

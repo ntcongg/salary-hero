@@ -23,7 +23,8 @@ model companies {
 }
 
 model employees {
-  id               BigInt             @id @default(autoincrement())
+  uuid             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               BigInt             @unique @default(autoincrement())
   company          companies          @relation(fields: [companyid], references: [id])
   companyid        BigInt
   email            String             @unique
@@ -33,7 +34,7 @@ model employees {
   salary           Float              @default(0)
   address          String             @default("Ha Noi, Viet Nam")
   dob              DateTime
-  phonenumber      BigInt             @unique
+  phonenumber      String             @unique
   updateddate      DateTime           @default(now())
   createdby        String             @default("admin")
   position_history position_history[]
@@ -42,13 +43,14 @@ model employees {
 }
 
 model admins {
-  id               BigInt             @id @default(autoincrement())
+  uuid             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               BigInt             @unique @default(autoincrement())
   positionhistory  position_history[]
   company          companies?         @relation(fields: [companyid], references: [id])
   companyid        BigInt
   createddate      DateTime           @default(now())
   updateddate      DateTime           @default(now())
-  createdby        String             @default("admin")
+  createdby        String             @default("system")
   employee_history employee_history[]
 }
 
@@ -74,7 +76,7 @@ model employee_history {
 
 model money_request {
   id            BigInt    @id @default(autoincrement())
-  employeeid    BigInt
+  employeeid  BigInt
   requestedby   employees @relation(fields: [employeeid], references: [id])
   amount        Float
   status        String
