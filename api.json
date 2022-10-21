@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "35ee91bc-83f8-4334-8bb9-706868401293",
-		"name": "Salary Hero",
+		"name": "New Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "22450497"
 	},
@@ -48,14 +48,13 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/company/create",
+							"raw": "localhost:8080/company",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"company",
-								"create"
+								"company"
 							]
 						}
 					},
@@ -64,7 +63,7 @@
 				{
 					"name": "Update a company",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -76,14 +75,13 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/company/update",
+							"raw": "localhost:8080/company",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"company",
-								"update"
+								"company"
 							]
 						}
 					},
@@ -95,14 +93,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/company/delete?id=1",
+							"raw": "localhost:8080/company?id=1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"company",
-								"delete"
+								"company"
 							],
 							"query": [
 								{
@@ -126,7 +123,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"companyId\": 1\r\n}",
+							"raw": "{\r\n    \"companyId\": 2,\r\n    \"email\": \"hello@gmail.com\",\r\n    \"name\": \"admin 1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -134,14 +131,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/admin/create",
+							"raw": "localhost:8080/admin/",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"admin",
-								"create"
+								""
 							]
 						}
 					},
@@ -159,13 +156,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Follow README to get this",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjdjZDQ2Ni0xNTUyLTQ1OWMtOWIxYy01MDEyYjQyMWJmODEiLCJpYXQiOjI1MTYyMzkwMjJ9.G5-cIDelVmlxze5XIisJG85T_CawGJyCbbhkLXs8Rc0",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"companyId\": 1,\r\n    \"email\": \"abc@gmail.com\",\r\n    \"firstName\":\"Adam\",\r\n    \"lastName\":\"Nguyen\",\r\n    \"position\": \"employee\",\r\n    \"salary\": 10000000,\r\n    \"address\": \"Ha Noi\",\r\n    \"dob\": \"2000-10-10 10:00:00\",\r\n    \"phoneNumber\": \"0123456789\"\r\n}",
+							"raw": "{\r\n    \"companyId\": 1,\r\n    \"email\": \"abcde@gmail.com\",\r\n    \"firstName\":\"Adam\",\r\n    \"lastName\":\"Nguyen\",\r\n    \"position\": \"employee\",\r\n    \"salary\": 10000000,\r\n    \"address\": \"Ha Noi\",\r\n    \"dob\": \"2000-10-10 10:00:00\",\r\n    \"phoneNumber\": \"0123946789\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -173,14 +170,43 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/employee/create",
+							"raw": "localhost:8080/employee",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"employee",
-								"create"
+								"employee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a employee",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMWY3NTFjOS0yOTFiLTRlZDgtODdiNi04ODY1NmJmZDExOWYiLCJpYXQiOjI1MTYyMzkwMjJ9.OSI7F96APsDK9eXJzH_awH574gklMjs-C-jYNOLlvS4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/employee?id=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employee"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -190,7 +216,13 @@
 					"name": "Get a employee",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/employee?id=1",
 							"host": [
@@ -213,8 +245,14 @@
 				{
 					"name": "Update a employee",
 					"request": {
-						"method": "POST",
-						"header": [],
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjdjZDQ2Ni0xNTUyLTQ1OWMtOWIxYy01MDEyYjQyMWJmODEiLCJpYXQiOjI1MTYyMzkwMjJ9.G5-cIDelVmlxze5XIisJG85T_CawGJyCbbhkLXs8Rc0",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"id\": 1,\r\n    \"salary\": 1234567,\r\n    \"dob\": 949486200003,\r\n    \"firstName\":\"John\",\r\n    \"lastName\": \"Wick\",\r\n    \"address\": \"123 ABC city\"\r\n}",
@@ -225,14 +263,13 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/employee/update",
+							"raw": "localhost:8080/employee",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"employee",
-								"update"
+								"employee"
 							]
 						}
 					},
@@ -242,7 +279,13 @@
 					"name": "Upsert a employee",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjdjZDQ2Ni0xNTUyLTQ1OWMtOWIxYy01MDEyYjQyMWJmODEiLCJpYXQiOjI1MTYyMzkwMjJ9.G5-cIDelVmlxze5XIisJG85T_CawGJyCbbhkLXs8Rc0",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"id\":1,\r\n    \"position\": \"manager\"\r\n}",
@@ -270,10 +313,16 @@
 					"name": "Request Money",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMWY3NTFjOS0yOTFiLTRlZDgtODdiNi04ODY1NmJmZDExOWYiLCJpYXQiOjI1MTYyMzkwMjJ9.OSI7F96APsDK9eXJzH_awH574gklMjs-C-jYNOLlvS4",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"amount\": 1000\r\n}",
+							"raw": "{\r\n    \"amount\": 100000\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -291,14 +340,6 @@
 								"request-money"
 							]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete a employee",
-					"request": {
-						"method": "GET",
-						"header": []
 					},
 					"response": []
 				}
