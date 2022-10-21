@@ -27,7 +27,6 @@ const getCompanyById = async (id) => {
 };
 
 const updateCompany = async (id, name, address, description) => {
-  console.log(moment(new Date()).format('yyyy:mm:dd hh:mm:ss'));
   const newCompany = await db.query(
     `UPDATE "companies" SET ("name", "address", "description", "updateddate")
       = ($1, $2, $3, $5) WHERE id = $4 RETURNING *`,
