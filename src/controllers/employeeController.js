@@ -136,8 +136,6 @@ const handleEmployeeRequestMoney = async (req, res) => {
     const { amount } = req.body;
     const { id, salary } = res.locals.employee;
     const totalRequested = await totalMoneyRequested(id);
-    console.log((amount + totalRequested.sum));
-    console.log(salary);
     if ((amount + totalRequested.sum) > (salary / 2)) {
       res.status(400).send('Request denied! Sum of requested amount for this month is over 50% of your salary');
       return;
