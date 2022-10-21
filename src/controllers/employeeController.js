@@ -144,7 +144,6 @@ const handleEmployeeRequestMoney = async (req, res) => {
     }
     await moneyRequest(id, amount);
     res.send('Request is accepted and processing for banking');
-    moneyRequest(id, amount);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

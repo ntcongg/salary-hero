@@ -75,7 +75,7 @@ const upsertEmployee = async (id, position) => {
 
 const deleteEmployee = async (id) => {
   await db.query(
-    'DELETE FROM "employees" WHERE id = $1',
+    'DELETE FROM "employees" WHERE id = $1 ',
     [
       id,
     ],

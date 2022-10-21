@@ -4,6 +4,7 @@ const adminController = require('../controllers/adminController');
 
 const router = Router();
 
-router.post('/create', body('companyId').isNumeric().withMessage('Only number allowed in companyId.'), adminController.handleCreateAdmin);
+router.post('/', body('companyId').isNumeric().withMessage('Only number allowed in companyId.')
+    ,body('email').isEmail().withMessage('Invalid email'), adminController.handleCreateAdmin);
 
 module.exports = router;

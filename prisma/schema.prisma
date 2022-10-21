@@ -37,21 +37,23 @@ model employees {
   phonenumber      String             @unique
   updateddate      DateTime           @default(now())
   createdby        String             @default("admin")
-  position_history position_history[]
-  employee_history employee_history[]
-  money_request    money_request[]
+  positionhistory position_history[]
+  employeehistory employee_history[]
+  moneyrequest    money_request[]
 }
 
 model admins {
   uuid             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id               BigInt             @unique @default(autoincrement())
   positionhistory  position_history[]
+  email            String             @unique
+  name             String
   company          companies?         @relation(fields: [companyid], references: [id])
   companyid        BigInt
   createddate      DateTime           @default(now())
   updateddate      DateTime           @default(now())
   createdby        String             @default("system")
-  employee_history employee_history[]
+  employeehistory employee_history[]
 }
 
 model position_history {

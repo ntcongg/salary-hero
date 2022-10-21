@@ -1,12 +1,14 @@
 let db = null;
 require('./dbConnect').init().then((database) => { db = database; });
 
-const createAdmin = async (companyId) => {
+const createAdmin = async (companyId, email, name) => {
   const newAdmin = await db.query(
-    `INSERT INTO "admins" ("companyid")
-      VALUES ($1) RETURNING *`,
+    `INSERT INTO "admins" ("companyid", "email", "name")
+      VALUES ($1, $2, $3) RETURNING *`,
     [
       companyId,
+      email,
+      name
     ],
   );
   return newAdmin.rows[0];
@@ -32,4 +34,14 @@ const getAdminById = async (id) => {
   return admin.rows[0];
 };
 
-module.exports = { createAdmin, getAdminByUuid, getAdminById };
+const getAdminByEmail = async (email) => {
+  const admin = await db.query(
+    'SELECT * FROM "admins" WHERE email = $1',
+    [
+      email,
+    ],
+  );
+  return admin.rows[0];
+};
+
+module.exports = { createAdmin, getAdminByUuid, getAdminById, getAdminByEmail };

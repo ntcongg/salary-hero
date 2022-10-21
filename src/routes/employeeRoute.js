@@ -7,13 +7,13 @@ const router = Router();
 
 router.get('/', employeeController.handleGetEmployee);
 
-router.post('/create',
+router.post('/',
   checkValidateAdmin, body('email').isEmail(), body('phoneNumber').isMobilePhone(), employeeController.handleCreateEmployee);
 
-router.post('/update',
+router.put('/',
   checkValidateAdmin, employeeController.handleUpdateEmployee);
 
-router.delete('/delete', [query('id', 'Employee id must be a number').isNumeric()], checkValidateAdmin, employeeController.handleDeleteEmployee);
+router.delete('/', [query('id', 'Employee id must be a number').isNumeric()], checkValidateEmployee, employeeController.handleDeleteEmployee);
 
 router.post('/upsert',
   checkValidateAdmin, employeeController.handleUpsertEmployee);

@@ -7,7 +7,7 @@ const router = Router();
 
 router.get('/', companyController.handleGetCompany);
 router.post(
-  '/create',
+  '/',
   body('name')
     .isString()
     .withMessage('Only letters and digits allowed in name.')
@@ -27,8 +27,8 @@ router.post(
     .withMessage('Description too short. Enter a longer description!'),
   companyController.handleCreateCompany,
 );
-router.post(
-  '/update',
+router.put(
+  '/',
   body('id', 'company id must be a number').isNumeric(),
   body('name')
     .isString()
@@ -50,7 +50,7 @@ router.post(
   companyController.handleUpdateCompany,
 );
 router.delete(
-  '/delete',
+  '/',
   [query('id', 'Company id must be a number').isNumeric()],
   companyController.handleDeleteCompany,
 );
